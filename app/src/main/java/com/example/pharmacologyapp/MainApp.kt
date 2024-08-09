@@ -45,7 +45,10 @@ fun MainApp(
         unknownConcentration = initialExperimentData.unknownConcentration
     }
 
-
+    // Save the variables whenever they change
+    LaunchedEffect(unknownDrugPair, drugList, receptorList, unknownConcentration) {
+        onSaveExperimentData(ExperimentData(drugList, unknownDrugPair, receptorList, unknownConcentration))
+    }
 
     // Menu display booleans
     var isSideDrugMenuVisible by remember { mutableStateOf(false) }
@@ -54,8 +57,6 @@ fun MainApp(
     var isAnswerMessageVisible by remember { mutableStateOf(false) }
     var isAnswerDrugMenuVisible by remember { mutableStateOf(false) }
     var isAnswerConcentrationInputVisible by remember { mutableStateOf(false) }
-
-
 
     // Initialize variables and functions for the experiment
     var selectedDrugIndex by remember { mutableIntStateOf(0) }
@@ -87,11 +88,6 @@ fun MainApp(
         receptorList = initializeExperimentReceptors(drugList = drugList, unknownDrugPair = unknownDrugPair) // Re-initialize the receptors
         onSaveExperimentData(ExperimentData(drugList, unknownDrugPair, receptorList, unknownConcentration)) // Save the update
     }
-
-    LaunchedEffect(unknownDrugPair, drugList, receptorList, unknownConcentration) {
-        onSaveExperimentData(ExperimentData(drugList, unknownDrugPair, receptorList, unknownConcentration))
-    }
-
 
     Row(modifier = modifier.fillMaxSize()){
 
