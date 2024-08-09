@@ -16,7 +16,14 @@
 
 ## Installation
 
-TODO
+To install the PCTH Simulator app:
+
+1. Go to the [latest release](https://github.com/your-username/your-repository/releases/latest) of this repository.
+2. Download the APK file attached to the release.
+3. Transfer the APK file to your Android device if necessary.
+4. Open the APK file on your device and follow the prompts to install the app.
+
+*You may need to enable installation from unknown sources on your device. This option can typically be found in your device's security settings.*
 
 ## Pharmacology Math  
   
