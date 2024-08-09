@@ -77,7 +77,7 @@ fun RandomizeMessage(
                     text = """
                         Previous experiment answers:
                         Unknown identity: ${oldUnknown.name}
-                        Unknown concentration: ${"%.2f".format(oldConcentration)}
+                        Unknown concentration: ${"%.2f".format(oldConcentration)} uM
                     """.trimIndent()
                 )
             },

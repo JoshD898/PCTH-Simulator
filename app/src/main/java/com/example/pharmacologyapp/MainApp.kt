@@ -122,7 +122,6 @@ fun MainApp(
             onResetGraphClicked = { resetPointData(graphData) },
             onRandomizeUnknownClicked = {
                 isRandomizeAlertVisible = true
-                randomizeUnknown()
             }
         )
 
@@ -136,7 +135,11 @@ fun MainApp(
                 chosenConcentration = answerConcentration,
                 onChooseDrugClicked = { isAnswerDrugMenuVisible = true },
                 onChooseConcentrationClicked = { isAnswerConcentrationInputVisible = true},
-                onCheckAnswerClicked = { isAnswerMessageVisible = true }
+                onCheckAnswerClicked = {
+                    isAnswerMessageVisible = true
+                    println(drugList[unknownDrugPair.second].name)
+                    println(unknownConcentration)
+                }
                 )
             LineGraph(modifier.weight(6f), pointsData = graphData, yMax = maxTension, ySteps = ySteps) //
         }
@@ -193,7 +196,10 @@ fun MainApp(
 
     RandomizeMessage(
         showAlert = isRandomizeAlertVisible,
-        onDismiss = { isRandomizeAlertVisible = false},
+        onDismiss = {
+            isRandomizeAlertVisible = false
+            randomizeUnknown()
+        },
         oldConcentration = unknownConcentration,
         oldUnknown = drugList[unknownDrugPair.second]
     )
