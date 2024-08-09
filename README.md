@@ -1,3 +1,23 @@
+## Introduction
+**PCTH Simulator** is a simple, interactive pharmacology experiment simulation tool designed to help students understand the effects of agonists and antagonists, and improve their pharmacological math skills. The primary objective is to determine the identity and concentration of an unknown drug by comparing its effects to generic agonists and antagnoists.
+
+<br></br>
+**Figure 1:** Main interface of PCTH Simulator
+<p align = "center">
+  <img src=https://github.com/user-attachments/assets/277cdbbe-4556-40f6-b690-1b9b77c82b97>
+</p>
+
+## Features
+
+- Simulate drug interactions using established pharmacological equations.
+- Experiment with different agonists and antagonists to observe their effects.
+- Determine the identity and concentration of an unknown drug.
+- Intuitive and user-friendly interface designed for educational purposes.
+
+## Installation
+
+TODO
+
 ## Pharmacology Math  
   
 **Equation 1**: Concentration-Effect Curve in Absence of an Antagonist [1]  
@@ -19,13 +39,12 @@ $$\frac{E_{\text{max}} \cdot C}{C + EC_{50} \cdot \left(1 + \frac{[I]}{K_{I}}\ri
 Combining Equations 1 and 2 yields Equation 3, which is the formula that is used in the app to calculate the effects of each agonist and antagonist at any given time.
 
 
-## Notes and Questions  
-All antagonists are considered to be competitive antagonists <br /><br />
-**What happens if two or more agonists are added at the same time?**  
-For simplicity, the individual effects caused by all agonists will be calculated, then the maximum of the calculated effects will be outputted <br /><br />
-The volume of the organ bath is assumed to be constant for all concentration changes (this is fine, as mixing the bath then draining off the extra volume would keep concentrations the same)
-For best results, try to keep the stock volume under 1mL, and the stock concentration under 1 uM.
-
+## Notes 
+- All antagonists are considered to be competitive antagonists.
+- For simplicity, the individual effects caused by all agonists will be calculated, then the maximum of the calculated effects will be outputted (i.e. Agonist 1 and Agonist 2 effects don't stack).
+- The volume of the hypothetical organ bath is 25 mL, and this stays contant throughout the whole experiment.
+- For best results, try to keep the stock volume under 1mL, and the stock concentration under 1 uM.
 
 ## References  
 [1] Katzung, Bertram G. Basic & Clinical Pharmacology. McGraw Hill Professional, 2004.
+i
