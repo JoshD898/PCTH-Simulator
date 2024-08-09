@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -15,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import co.yml.charts.common.model.Point
+import com.example.pharmacologyapp.classes.ExperimentData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -22,29 +24,41 @@ import kotlin.random.Random
 
 
 @Composable
-fun MainApp(modifier: Modifier = Modifier) {
+fun MainApp(
+    modifier: Modifier = Modifier,
+    initialExperimentData: ExperimentData,
+    onSaveExperimentData: (ExperimentData) -> Unit
+) {
 
-    // Menu display booleans
-
-    var isSideDrugMenuVisible by remember { mutableStateOf(false) }
-    var isConcentrationInputVisible by remember { mutableStateOf(false) }
-    var isVolumeInputVisible by remember { mutableStateOf(false) }
-    var isAnswerMessageVisible by remember { mutableStateOf(false)}
-    var isAnswerDrugMenuVisible by remember { mutableStateOf(false) }
-    var isAnswerConcentrationInputVisible by remember { mutableStateOf(false) }
-
-    // Initialize drugs and receptors for the experiment
-
-    val drugList = remember { initializeExperimentDrugs() }
+    // Start by initializing the variables
+    var drugList = remember { initializeExperimentDrugs() }
     var unknownDrugPair = remember { createUnknownDrug(drugList = drugList) }
     drugList.add(unknownDrugPair.first) // Add the unknown drug to the drug list
     var receptorList = remember { initializeExperimentReceptors(drugList = drugList, unknownDrugPair = unknownDrugPair) }
+    var unknownConcentration = remember { Random.nextFloat() + 0.5f }
+
+    // If data has been saved, overwrite the initialized variables
+    if (initialExperimentData.drugList != null) {
+        drugList = initialExperimentData.drugList
+        unknownDrugPair = Pair(initialExperimentData.unknownDrugPair.first!!, initialExperimentData.unknownDrugPair.second!!)
+        receptorList = initialExperimentData.receptorList!!
+        unknownConcentration = initialExperimentData.unknownConcentration
+    }
+
+
+
+    // Menu display booleans
+    var isSideDrugMenuVisible by remember { mutableStateOf(false) }
+    var isConcentrationInputVisible by remember { mutableStateOf(false) }
+    var isVolumeInputVisible by remember { mutableStateOf(false) }
+    var isAnswerMessageVisible by remember { mutableStateOf(false) }
+    var isAnswerDrugMenuVisible by remember { mutableStateOf(false) }
+    var isAnswerConcentrationInputVisible by remember { mutableStateOf(false) }
+
 
 
     // Initialize variables and functions for the experiment
-
-    var unknownConcentration = remember { Random.nextFloat() + 0.5f } // Random float in the range of 0.5 - 1.5
-    var selectedDrugIndex by remember {mutableIntStateOf(0)}
+    var selectedDrugIndex by remember { mutableIntStateOf(0) }
     var currentConcentration by remember { mutableFloatStateOf(1.0f) }
     var currentVolume by remember { mutableFloatStateOf(1.0f) }
     var currentTension by remember { mutableFloatStateOf(0.0f) }
@@ -52,9 +66,10 @@ fun MainApp(modifier: Modifier = Modifier) {
     var answerConcentration by remember { mutableFloatStateOf(0f) }
     val maxTension = 5f
     val ySteps = 5
-    val graphData = remember { mutableStateListOf(Point(0f, maxTension), Point(0f, 0f)) } // Not a good long term solution, but this makes sure the graph scales properly
+    val graphData = remember { mutableStateListOf(Point(0f, maxTension), Point(0f, 0f)) }
     val scope = rememberCoroutineScope()
-    var job: Job?  by remember { mutableStateOf(null)}
+    var job by remember { mutableStateOf<Job?>(null) }
+
     fun launchJob() {
         job = scope.launch {
             while (true) {
@@ -63,12 +78,18 @@ fun MainApp(modifier: Modifier = Modifier) {
             }
         }
     }
+
     fun randomizeUnknown() {
         unknownConcentration = Random.nextFloat() + 0.5f
         drugList.remove(unknownDrugPair.first) // Remove the unknown from drugList
         unknownDrugPair = createUnknownDrug(drugList = drugList)
         drugList.add(unknownDrugPair.first) // Add the new unknown to drugList
         receptorList = initializeExperimentReceptors(drugList = drugList, unknownDrugPair = unknownDrugPair) // Re-initialize the receptors
+        onSaveExperimentData(ExperimentData(drugList, unknownDrugPair, receptorList, unknownConcentration)) // Save the update
+    }
+
+    LaunchedEffect(unknownDrugPair, drugList, receptorList, unknownConcentration) {
+        onSaveExperimentData(ExperimentData(drugList, unknownDrugPair, receptorList, unknownConcentration))
     }
 
 
@@ -108,7 +129,7 @@ fun MainApp(modifier: Modifier = Modifier) {
                 chosenConcentration = answerConcentration,
                 onChooseDrugClicked = { isAnswerDrugMenuVisible = true },
                 onChooseConcentrationClicked = { isAnswerConcentrationInputVisible = true},
-                onCheckAnswerClicked = { isAnswerMessageVisible = true}
+                onCheckAnswerClicked = { isAnswerMessageVisible = true }
                 )
             LineGraph(modifier.weight(6f), pointsData = graphData, yMax = maxTension, ySteps = ySteps) //
         }
@@ -169,7 +190,7 @@ fun MainApp(modifier: Modifier = Modifier) {
 @Preview(showBackground = true, widthDp = 620, heightDp = 320)
 @Composable
 fun InterfacePreview() {
-    MainApp()
+
 }
 
 

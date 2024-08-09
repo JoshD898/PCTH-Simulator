@@ -1,5 +1,7 @@
 package com.example.pharmacologyapp.classes
 
+import java.io.Serializable
+
 /**
  * Represents a drug with properties and methods to manage its concentration.
  *
@@ -15,7 +17,7 @@ data class Drug(
     val halfMax: Float = 0.0f,
     val dissociationConstant: Float = 0.0f,
     var concentration: Float = 0.0f
-) {
+): Serializable {
     fun changeConcentration(stockVolume: Float, stockConcentration: Float, bathVolume: Float, unknownConcentration: Float) {
         concentration = if (name == "Unknown") {
             (concentration * bathVolume + stockVolume * unknownConcentration) / (stockVolume + bathVolume)
