@@ -97,19 +97,14 @@ fun largestTensionFraction(receptors: List<Receptor>):Float {
 /**
  * Resets the concentration of all drugs in the bath
  *
- * @param receptors The list of receptors for the experiment
+ * @param drugList The list of receptors for the experiment
  */
-fun resetConcentrations(receptors: List<Receptor>) {
-    for (receptor in receptors) {
-        for (drug in receptor.agonists) {
-                drug.concentration = 0f
-        }
-        for (drug in receptor.antagonists) {
-                drug.concentration = 0f
-        }
+fun resetConcentrations(drugList: MutableList<Drug>):MutableList<Drug> {
+    for (drug in drugList) {
+        drug.concentration = 0f
     }
+    return (drugList)
 }
-
 /**
  * Checks if the user's provided answers for the unknown identity and concentration are correct.
  * The concentration guess is deemed correct if it is within 2% of the true value.

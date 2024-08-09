@@ -1,7 +1,5 @@
 package com.example.pharmacologyapp.classes
 
-import java.io.Serializable
-
 /**
  * Represents a receptor with a method to update its tension fraction.
  *
@@ -17,7 +15,7 @@ data class Receptor(
     val agonists: List<Drug>,
     val antagonists: List<Drug>,
     var tensionFraction: Float = 0.0f
-): Serializable {
+) {
     fun updateTension() {
 
         for (agonist in agonists) {

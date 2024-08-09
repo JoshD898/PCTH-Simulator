@@ -30,24 +30,32 @@ fun MainApp(
     onSaveExperimentData: (ExperimentData) -> Unit
 ) {
 
-    // Start by initializing the variables
-    var drugList = remember { initializeExperimentDrugs() }
-    var unknownDrugPair = remember { createUnknownDrug(drugList = drugList) }
-    drugList.add(unknownDrugPair.first) // Add the unknown drug to the drug list
-    var receptorList = remember { initializeExperimentReceptors(drugList = drugList, unknownDrugPair = unknownDrugPair) }
-    var unknownConcentration = remember { Random.nextFloat() + 0.5f }
-
-    // If data has been saved, overwrite the initialized variables
-    if (initialExperimentData.drugList != null) {
-        drugList = initialExperimentData.drugList
-        unknownDrugPair = Pair(initialExperimentData.unknownDrugPair.first!!, initialExperimentData.unknownDrugPair.second!!)
-        receptorList = initialExperimentData.receptorList!!
-        unknownConcentration = initialExperimentData.unknownConcentration
+    val hasSavedData = initialExperimentData.unknownDrugPair.first != null
+    val drugList = remember { initializeExperimentDrugs() }
+    var unknownDrugPair by remember {
+        mutableStateOf(
+            if (hasSavedData) Pair(initialExperimentData.unknownDrugPair.first!!, initialExperimentData.unknownDrugPair.second!!)
+            else createUnknownDrug(drugList)
+        )
+    }
+    var receptorList by remember {
+        mutableStateOf(initializeExperimentReceptors(drugList, unknownDrugPair))
+    }
+    var unknownConcentration by remember {
+        mutableFloatStateOf(
+            if (hasSavedData) initialExperimentData.unknownConcentration
+            else Random.nextFloat() + 0.5f
+        )
+    }
+    // Launched effect because this should only happen once
+    LaunchedEffect(Unit) {
+        drugList.add(unknownDrugPair.first)
     }
 
+
     // Save the variables whenever they change
-    LaunchedEffect(unknownDrugPair, drugList, receptorList, unknownConcentration) {
-        onSaveExperimentData(ExperimentData(drugList, unknownDrugPair, receptorList, unknownConcentration))
+    LaunchedEffect(unknownDrugPair, unknownConcentration) {
+        onSaveExperimentData(ExperimentData(unknownDrugPair, unknownConcentration))
     }
 
     // Menu display booleans
@@ -57,6 +65,7 @@ fun MainApp(
     var isAnswerMessageVisible by remember { mutableStateOf(false) }
     var isAnswerDrugMenuVisible by remember { mutableStateOf(false) }
     var isAnswerConcentrationInputVisible by remember { mutableStateOf(false) }
+    var isRandomizeAlertVisible by remember { mutableStateOf(false) }
 
     // Initialize variables and functions for the experiment
     var selectedDrugIndex by remember { mutableIntStateOf(0) }
@@ -83,10 +92,9 @@ fun MainApp(
     fun randomizeUnknown() {
         unknownConcentration = Random.nextFloat() + 0.5f
         drugList.remove(unknownDrugPair.first) // Remove the unknown from drugList
-        unknownDrugPair = createUnknownDrug(drugList = drugList)
+        unknownDrugPair = createUnknownDrug(drugList = drugList) // Randomize
         drugList.add(unknownDrugPair.first) // Add the new unknown to drugList
         receptorList = initializeExperimentReceptors(drugList = drugList, unknownDrugPair = unknownDrugPair) // Re-initialize the receptors
-        onSaveExperimentData(ExperimentData(drugList, unknownDrugPair, receptorList, unknownConcentration)) // Save the update
     }
 
     Row(modifier = modifier.fillMaxSize()){
@@ -102,17 +110,20 @@ fun MainApp(
             onAddToBathClicked = {
                 drugList[selectedDrugIndex].changeConcentration(stockConcentration = currentConcentration, stockVolume = currentVolume, bathVolume = 25f, unknownConcentration = unknownConcentration) // Update the concentration of the chosen drug
                 updateTensionFractions(receptors = receptorList) // Update the tension fraction of all receptors
-                currentTension = maxTension * largestTensionFraction(receptorList) // Update currentTension
+                currentTension = maxTension * largestTensionFraction(receptorList)
             },
             onDrainBathClicked = { // Reset all concentrations when this button is clicked
-                resetConcentrations(receptorList)
+                resetConcentrations(drugList)
                 updateTensionFractions(receptors = receptorList)
                 currentTension = maxTension * largestTensionFraction(receptorList)
-             },
+            },
             onStartRecordingClicked = { if (job == null || !job!!.isActive) { launchJob() } },
             onStopRecordingClicked = { if (job!!.isActive) { job!!.cancel() } },
             onResetGraphClicked = { resetPointData(graphData) },
-            onRandomizeUnknownClicked = { randomizeUnknown() }
+            onRandomizeUnknownClicked = {
+                isRandomizeAlertVisible = true
+                randomizeUnknown()
+            }
         )
 
         Column(modifier = modifier
@@ -179,6 +190,13 @@ fun MainApp(
         showAlert = isAnswerMessageVisible,
         onDismiss = { isAnswerMessageVisible = false },
         )
+
+    RandomizeMessage(
+        showAlert = isRandomizeAlertVisible,
+        onDismiss = { isRandomizeAlertVisible = false},
+        oldConcentration = unknownConcentration,
+        oldUnknown = drugList[unknownDrugPair.second]
+    )
 }
 
 
