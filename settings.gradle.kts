@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Pharmacology App"
+rootProject.name = "PCTH Simulator"
 include(":app")
  
