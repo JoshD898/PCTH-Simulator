@@ -50,6 +50,7 @@ Combining Equations 1 and 2 yields Equation 3, which is the formula that is used
 - All antagonists are considered to be competitive antagonists.
 - For simplicity, the individual effects caused by all agonists will be calculated, then the maximum of the calculated effects will be outputted (i.e. Agonist 1 and Agonist 2 effects don't stack).
 - The volume of the hypothetical organ bath is 25 mL, and this stays contant throughout the whole experiment.
+- Draining the bath is assumed to completely wash out all drugs, including antagonists.
 - For best results, try to keep the stock volume under 1mL, and the stock concentration under 1 uM.
 
 ## References  
