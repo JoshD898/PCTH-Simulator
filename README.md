@@ -54,4 +54,3 @@ Combining Equations 1 and 2 yields Equation 3, which is the formula that is used
 
 ## References  
 [1] Katzung, Bertram G. Basic & Clinical Pharmacology. McGraw Hill Professional, 2004.
-i
